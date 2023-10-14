@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Gestión de Películas</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mt-4">Gestión de Películas</h1>
+
+        <!-- Formulario para agregar una nueva película -->
+        <h4 class="mt-4">Agregar una nueva Película</h4>
+        <form id="formulario" class="mt-4">
+            <div class="form-group">
+                <input type="text" id="titulo" class="form-control" placeholder="Título">
+            </div>
+            <div class="form-group">
+                <input type="text" id="director" class="form-control" placeholder="Director">
+            </div>
+            <div class="form-group">
+                <input type="date" id="fechaEstreno" class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" id="genero" class="form-control" placeholder="Género">
+            </div>
+            <div class="form-group">
+                <input type="number" id="duracion" class="form-control" placeholder="Duración">
+            </div>
+            <div class="form-group">
+                <input type="number" id="puntuacion" class="form-control" placeholder="Puntuación">
+            </div>
+            <button type="submit" class="btn btn-success">Agregar</button>
+        </form>
+
+        <!-- Formulario para actualizar una película existente -->
+        <h4 class="mt-4">Actualizar Película</h4>
+        <form id="formularioActualizar" class="mt-4">
+            <div class="form-group">
+                <input type="text" id="idActualizar" class="form-control" placeholder="ID de la película a actualizar">
+            </div>
+            <div class="form-group">
+                <input type="text" id="tituloActualizar" class="form-control" placeholder="Nuevo título">
+            </div>
+            <div class="form-group">
+                <input type="text" id="directorActualizar" class="form-control" placeholder="Nuevo director">
+            </div>
+            <div class="form-group">
+                <input type="date" id="fechaEstrenoActualizar" class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" id="generoActualizar" class="form-control" placeholder="Nuevo género">
+            </div>
+            <div class="form-group">
+                <input type="number" id="duracionActualizar" class="form-control" placeholder="Nueva duración">
+            </div>
+            <div class="form-group">
+                <input type="number" id="puntuacionActualizar" class="form-control" placeholder="Nueva puntuación">
+            </div>
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+        </form>
+
+        <!-- Formulario para eliminar una película existente -->
+        <h4 class="mt-4">Eliminar Película</h4>
+        <form id="formularioEliminar" class="mt-4">
+            <div class="form-group">
+                <input type="text" id="idEliminar" class="form-control" placeholder="ID de la película a eliminar">
+            </div>
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+
+        <div id="peliculas" class="mt-4"></div>
+    </div>
+
+    <script>
+        // Obtiene el elemento del DOM donde se mostrarán las películas.
+        const peliculasDiv = document.getElementById('peliculas');
+
+        // Obtiene las películas de la API.
+        fetch('http://localhost:3000/peliculas')
+            .then(response => response.json())
+            .then(peliculas => {
+                // Crea un div para cada película y lo añade al div de películas.
+                for (const pelicula of peliculas) {
+                    const peliculaDiv = document.createElement('div');
+                    peliculaDiv.className = 'pelicula';
+                    peliculaDiv.textContent = `Título: ${pelicula.title}, Director: ${pelicula.director}, Fecha de estreno: ${pelicula.releaseDate}, Género: ${pelicula.genre}, Duración: ${pelicula.duration} minutos, Puntuación: ${pelicula.rating}`;
+                    peliculasDiv.appendChild(peliculaDiv);
+                }
+            });
+
+        // Obtiene el formulario del DOM.
+        const formulario = document.getElementById('formulario');
+
+        // Añade un evento 'submit' al formulario.
+        formulario.addEventListener('submit', (event) => {
+            // Evita que el formulario se envíe de la manera predeterminada.
+            event.preventDefault();
+
+            // Crea un objeto con los datos del formulario.
+            const nuevaPelicula = {
+                title: document.getElementById('titulo').value,
+                director: document.getElementById('director').value,
+                releaseDate: document.getElementById('fechaEstreno').value,
+                genre: document.getElementById('genero').value,
+                duration: document.getElementById('duracion').value,
+                rating: document.getElementById('puntuacion').value
+            };
+
+            // Envía los datos del formulario a la API para crear una nueva película.
+            fetch('http://localhost:3000/peliculas', {
+
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(nuevaPelicula)
+            })
+                .then(response => response.json())
+                .then(pelicula => {
+                    // Añade la nueva película a la lista de películas.
+                    const peliculaDiv = document.createElement('div');
+                    peliculaDiv.className = 'pelicula';
+                    peliculaDiv.textContent = `Título: ${pelicula.title}, Director: ${pelicula.director}, Fecha de estreno: ${pelicula.releaseDate}, Género: ${pelicula.genre}, Duración: ${pelicula.duration} minutos, Puntuación: ${pelicula.rating}`;
+                    peliculasDiv.appendChild(peliculaDiv);
+                });
+        });
+
+        // Obtiene el formulario de actualización del DOM.
+        const formularioActualizar = document.getElementById('formularioActualizar');
+
+        // Añade un evento 'submit' al formulario de actualización.
+        formularioActualizar.addEventListener('submit', (event) => {
+            // Evita que el formulario se envíe de la manera predeterminada.
+            event.preventDefault();
+
+            // Crea un objeto con los datos del formulario de actualización.
+            const peliculaActualizada = {
+                title: document.getElementById('tituloActualizar').value,
+                director: document.getElementById('directorActualizar').value,
+                releaseDate: document.getElementById('fechaEstrenoActualizar').value,
+                genre: document.getElementById('generoActualizar').value,
+                duration: document.getElementById('duracionActualizar').value,
+                rating: document.getElementById('puntuacionActualizar').value
+            };
+
+            // Envía los datos del formulario a la API para actualizar una película existente.
+            fetch(`http://localhost:3000/peliculas/${document.getElementById('idActualizar').value}`, {
+
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(peliculaActualizada)
+            })
+                .then(response => response.json())
+                .then(pelicula => {
+                    // Actualiza la película en la lista de películas.
+                    const peliculaDiv = document.createElement('div');
+                    peliculaDiv.className = 'pelicula';
+                    peliculaDiv.textContent = `Título: ${pelicula.title}, Director: ${pelicula.director}, Fecha de estreno: ${pelicula.releaseDate}, Género: ${pelicula.genre}, Duración: ${pelicula.duration} minutos, Puntuación: ${pelicula.rating}`;
+                    peliculasDiv.appendChild(peliculaDiv);
+                });
+        });
+
+        // Obtiene el formulario de eliminación del DOM.
+        const formularioEliminar = document.getElementById('formularioEliminar');
+
+        // Añade un evento 'submit' al formulario de eliminación.
+        formularioEliminar.addEventListener('submit', (event) => {
+            // Evita que el formulario se envíe de la manera predeterminada.
+            event.preventDefault();
+
+            // Envía una solicitud a la API para eliminar una película existente.
+            fetch(`http://localhost:3000/peliculas/${document.getElementById('idEliminar').value}`, {
+
+                method: 'DELETE'
+            })
+                .then(response => response.json())
+                .then(message => {
+                    console.log(message); // Imprime el mensaje de éxito en la consola.
+                });
+        });
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
